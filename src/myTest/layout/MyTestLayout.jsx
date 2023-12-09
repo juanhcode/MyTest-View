@@ -1,23 +1,12 @@
 import { Box } from "@mui/material"
-import { Navbar } from "../components";
+import MiniDrawer from "../components/Sidebar";
+import Home from "../../auth/pages/Home";
 
 
-const drawerWidth = 240;
-
-export const MyTestLayout = ({children}) => {
+export const MyTestLayout = () => {
     return (
         <Box sx={{ display: "flex" }}>
-
-            <Navbar drawerWidth={ drawerWidth }/>
-
-            <Box
-                component='main'
-                sx={{ flexGrow: 1, p: 3 }}
-            >
-
-                { children }
-
-            </Box>
+            <MiniDrawer MainComponent={() => <Home />}/>
         </Box>
     )
 }
