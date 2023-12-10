@@ -18,6 +18,8 @@ const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 // Componente funcional principal para la barra de navegación
 function Navbar() {
+
+  const userdata = JSON.parse(localStorage.getItem("decodedToken"));
   // Estado local para manejar el menú de usuario
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -60,7 +62,7 @@ function Navbar() {
           {/* Contenedor para el botón de menú y el menú de usuario */}
           <Box sx={{ marginLeft: "auto", display: "flex", gap: "20px"}}>
             <Box>
-              <Typography sx={{fontWeight: "bold", fontSize: {xs: "12px", md: "16px"}, textAlign: "right"}}>Guest</Typography>
+              <Typography sx={{fontWeight: "bold", fontSize: {xs: "12px", md: "16px"}, textAlign: "right"}}>{userdata.nombre}</Typography>
               <Typography sx={{fontSize: {xs: "10px", md: "14px"}, color: "#787486", textAlign: "right"}}>Colombia</Typography>
             </Box>
             {/* Botón de usuario con avatar */}

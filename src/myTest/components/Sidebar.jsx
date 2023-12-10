@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -16,9 +17,12 @@ import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import Navbar from "./Navbar";
+import { HiOutlineSquares2X2 } from "react-icons/hi2";
+import { IoSettingsOutline } from "react-icons/io5";
+import { RiAddBoxLine } from "react-icons/ri";
+import { TbPointFilled } from "react-icons/tb";
+import axios from "axios";
 
 // Ancho del cajón lateral
 const drawerWidth = 200;
@@ -93,9 +97,20 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 // Componente principal que incluye la barra de aplicación, el cajón lateral y el contenido principal
+
+const getRandomColor = () => {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
 export default function MiniDrawer({ MainComponent }) {
   const theme = useTheme();
   const [open, setOpen] = React.useState(true);
+  const [selectedProject, setSelectedProject] = React.useState(""); // Nuevo estado
 
   // Manejadores para abrir y cerrar el cajón lateral
   const handleDrawerOpen = () => {
@@ -104,6 +119,36 @@ export default function MiniDrawer({ MainComponent }) {
 
   const handleDrawerClose = () => {
     setOpen(false);
+  };
+
+  const token = localStorage.getItem("token");
+  const User = JSON.parse(localStorage.getItem("decodedToken"));
+
+  const [project, setProject] = useState([]);
+
+  useEffect(() => {
+    const getProject = async () => {
+      try {
+        const response = await axios.get(
+          `https://proyecto-mytest.fly.dev/v1/manage/${User.id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const dataProject = response.data;
+        setProject(dataProject);
+      } catch (error) {
+        console.error("Error fetching projects", error);
+      }
+    };
+    getProject();
+  }, []);
+
+  const handleProjectSelect = (project) => {
+    console.log("Selected Project:", project); // Agrega este log
+    setSelectedProject(project); // Ajusta aquí según la estructura de tu objeto project
   };
 
   return (
@@ -128,7 +173,7 @@ export default function MiniDrawer({ MainComponent }) {
             <MenuIcon />
           </IconButton>
           {/* Componente de la barra de navegación */}
-          <Navbar/>
+          <Navbar />
         </Toolbar>
       </AppBar>
 
@@ -136,8 +181,8 @@ export default function MiniDrawer({ MainComponent }) {
       <Drawer variant="permanent" open={open}>
         {/* Encabezado del cajón lateral con botón para cerrar */}
         <DrawerHeader>
-          <Box sx={{display: "flex", gap: "10px", margin: "auto"}}>
-            <Typography sx={{fontWeight:"Bold"}}>MyTest</Typography>
+          <Box sx={{ display: "flex", gap: "10px", margin: "auto" }}>
+            <Typography sx={{ fontWeight: "Bold" }}>MyTest</Typography>
             <img src="/src/assets/LogoMyTest.png" alt="Logo My Test" />
           </Box>
           <IconButton onClick={handleDrawerClose}>
@@ -152,36 +197,79 @@ export default function MiniDrawer({ MainComponent }) {
         {/* Lista de elementos en el cajón lateral */}
         <Divider />
         <List>
-          {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
-              <ListItemButton
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
                 sx={{
-                  minHeight: 48,
-                  justifyContent: open ? "initial" : "center",
-                  px: 2.5,
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : "auto",
-                    justifyContent: "center",
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+                <HiOutlineSquares2X2 fontSize={"25px"} />
+              </ListItemIcon>
+              <ListItemText primary={"Home"} sx={{ opacity: open ? 1 : 0 }} />
+            </ListItemButton>
+          </ListItem>
+          <ListItem disablePadding sx={{ display: "block" }}>
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                justifyContent: open ? "initial" : "center",
+                px: 2.5,
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: open ? 3 : "auto",
+                  justifyContent: "center",
+                }}
+              >
+                <IoSettingsOutline fontSize={"25px"} />
+              </ListItemIcon>
+              <ListItemText
+                primary={"Settings"}
+                sx={{ opacity: open ? 1 : 0 }}
+              />
+            </ListItemButton>
+          </ListItem>
         </List>
 
         {/* Otra sección en el cajón lateral */}
         <Divider />
         <List>
-          {["All mail", "Trash", "Spam"].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: "block" }}>
+          <Box
+            sx={{
+              display: "flex",
+              height: 20,
+              justifyContent: open ? "initial" : "center",
+            }}
+          >
+            <Typography
+              sx={{
+                minHeight: 48,
+                display: open ? "true" : "none",
+                px: 2.5,
+                fontSize: 12,
+                textTransform: "uppercase",
+                color: "#787486",
+              }}
+            >
+              My projects
+            </Typography>
+            <RiAddBoxLine color="#787486" />
+          </Box>
+          {project.map((project, index) => (
+            <ListItem key={index} disablePadding sx={{ display: "block" }}>
               <ListItemButton
+                onClick={() => handleProjectSelect(project)}
                 sx={{
                   minHeight: 48,
                   justifyContent: open ? "initial" : "center",
@@ -191,13 +279,17 @@ export default function MiniDrawer({ MainComponent }) {
                 <ListItemIcon
                   sx={{
                     minWidth: 0,
-                    mr: open ? 3 : "auto",
+                    mr: open ? 0.5 : "auto",
                     justifyContent: "center",
+                    color: getRandomColor(),
                   }}
                 >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  <TbPointFilled fontSize={"15px"} />
                 </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
+                <ListItemText
+                  primary={project.proyecto.nombre}
+                  sx={{ opacity: open ? 1 : 0 }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
@@ -208,7 +300,7 @@ export default function MiniDrawer({ MainComponent }) {
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <DrawerHeader />
         {/* Renderiza el componente principal proporcionado como MainComponent */}
-        <MainComponent />
+        <MainComponent selectedProject={selectedProject} />
       </Box>
     </Box>
   );
