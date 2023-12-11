@@ -57,7 +57,7 @@ function Home({ selectedProject }) {
       <Typography variant="h3" sx={{ paddingBottom: 5 }}>
         {selectedProject
           ? selectedProject.proyecto.nombre
-          : "Por favor, tengamos sexo."}
+          : "Casos de prueba"}
       </Typography>
       <Divider></Divider>
       <Box>
