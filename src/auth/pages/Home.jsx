@@ -67,7 +67,7 @@ function Home({ selectedProject }) {
         <Box marginTop={2}>
           {errorFetchingCasos ? (
             <Typography variant="body1" marginTop={2}>
-              No hay casos de prueba para este proyecto. Te falla no?
+              No hay casos de prueba para este proyecto.
             </Typography>
           ) : (
             <Grid
